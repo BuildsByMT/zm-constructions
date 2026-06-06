@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import AuroraBackground from '../components/AuroraBackground';
 import BeforeAfterSlider from '../components/BeforeAfterSlider';
-import { ArrowUpRight, Award, ShieldCheck, Zap, Users, Sparkles, Building2, HardHat, Hammer, FileText, CheckCircle2 } from 'lucide-react';
+import { ArrowUpRight, Award, ShieldCheck, Zap, Users, Sparkles, Building2, HardHat, Hammer, FileText, CheckCircle2, Landmark } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
