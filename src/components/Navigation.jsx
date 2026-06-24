@@ -37,7 +37,7 @@ export default function Navigation({ activePage, onNavigate }) {
       <nav className="nav-floating">
         {/* Logo */}
         <a 
-          href="#home" 
+          href="/home" 
           className="nav-logo" 
           onClick={(e) => { e.preventDefault(); handleNavClick('home'); }}
         >
@@ -50,7 +50,7 @@ export default function Navigation({ activePage, onNavigate }) {
           {navItems.map((item) => (
             <a
               key={item.id}
-              href={`#${item.id}`}
+              href={`/${item.id}`}
               onClick={(e) => { e.preventDefault(); handleNavClick(item.id); }}
               className={`nav-link ${activePage === item.id || (item.id === 'blog' && activePage === 'blog-details') || (item.id === 'projects' && activePage === 'project-details') ? 'active' : ''}`}
             >
@@ -127,7 +127,7 @@ export default function Navigation({ activePage, onNavigate }) {
           {navItems.map((item) => (
             <a
               key={item.id}
-              href={`#${item.id}`}
+              href={`/${item.id}`}
               onClick={(e) => { e.preventDefault(); handleNavClick(item.id); }}
               style={{
                 fontFamily: 'var(--font-serif)',

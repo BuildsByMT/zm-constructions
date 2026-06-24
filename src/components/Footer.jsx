@@ -42,7 +42,7 @@ export default function Footer({ onNavigate }) {
               {['home', 'about', 'services', 'projects', 'team', 'careers', 'blog'].map((page) => (
                 <li key={page}>
                   <a 
-                    href={`#${page}`} 
+                    href={`/${page}`} 
                     onClick={(e) => { e.preventDefault(); onNavigate(page); }}
                     style={{ transition: 'var(--transition-fast)' }}
                     className="footer-link-hover"
@@ -58,11 +58,11 @@ export default function Footer({ onNavigate }) {
           <div>
             <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', marginBottom: '1.5rem', fontWeight: 600 }}>Core Offerings</h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-              <li><a href="#services" onClick={(e) => { e.preventDefault(); onNavigate('services'); }} className="footer-link-hover">Residential Estates</a></li>
-              <li><a href="#services" onClick={(e) => { e.preventDefault(); onNavigate('services'); }} className="footer-link-hover">Commercial Horizons</a></li>
-              <li><a href="#services" onClick={(e) => { e.preventDefault(); onNavigate('services'); }} className="footer-link-hover">Luxury Renovations</a></li>
-              <li><a href="#services" onClick={(e) => { e.preventDefault(); onNavigate('services'); }} className="footer-link-hover">Interior Architecture</a></li>
-              <li><a href="#services" onClick={(e) => { e.preventDefault(); onNavigate('services'); }} className="footer-link-hover">Project Management</a></li>
+              <li><a href="/services" onClick={(e) => { e.preventDefault(); onNavigate('services'); }} className="footer-link-hover">Residential Estates</a></li>
+              <li><a href="/services" onClick={(e) => { e.preventDefault(); onNavigate('services'); }} className="footer-link-hover">Commercial Horizons</a></li>
+              <li><a href="/services" onClick={(e) => { e.preventDefault(); onNavigate('services'); }} className="footer-link-hover">Luxury Renovations</a></li>
+              <li><a href="/services" onClick={(e) => { e.preventDefault(); onNavigate('services'); }} className="footer-link-hover">Interior Architecture</a></li>
+              <li><a href="/services" onClick={(e) => { e.preventDefault(); onNavigate('services'); }} className="footer-link-hover">Project Management</a></li>
             </ul>
           </div>
 

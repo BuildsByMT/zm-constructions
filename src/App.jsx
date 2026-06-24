@@ -21,48 +21,49 @@ import QuoteRequest from './pages/QuoteRequest';
 import gsap from 'gsap';
 
 export default function App() {
-  const getPageFromHash = () => {
-    const hash = window.location.hash.replace('#/', '');
-    return verifyRedirectPage(hash) || 'home';
+  const getPageFromPath = () => {
+    const path = window.location.pathname.replace(/^\/+/, '');
+    return verifyRedirectPage(path) || 'home';
   };
 
-  const [currentPage, setCurrentPage] = useState(getPageFromHash());
+  const [currentPage, setCurrentPage] = useState(getPageFromPath());
   const [activeParams, setActiveParams] = useState(null);
   const transitionOverlayRef = useRef(null);
   const transitionLogoRef = useRef(null);
   const isNavigatingProgrammatically = useRef(false);
 
-  // Sync state on hashchange (e.g. browser back/forward buttons)
+  // Sync state on popstate (e.g. browser back/forward buttons)
   useEffect(() => {
-    const handleHashChange = () => {
+    const handlePopState = () => {
       if (isNavigatingProgrammatically.current) {
         isNavigatingProgrammatically.current = false;
         return;
       }
-      const pageId = getPageFromHash();
+      const pageId = getPageFromPath();
       if (pageId !== currentPage) {
         navigateToPage(pageId, null, false);
       }
     };
 
-    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handlePopState);
     
-    // Set initial hash if empty
-    if (!window.location.hash) {
-      window.location.hash = '/' + currentPage;
+    // Set initial pathname if it's "/" or empty
+    if (window.location.pathname === '/' || window.location.pathname === '') {
+      window.history.replaceState(null, '', '/home');
+      setCurrentPage('home');
     }
     
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, [currentPage]);
 
   // Smooth cinematic page transition wipes
-  const navigateToPage = (pageId, params = null, updateHash = true) => {
+  const navigateToPage = (pageId, params = null, updateUrl = true) => {
     // Open Redirect validation & sanitization
     const safePageId = verifyRedirectPage(pageId);
 
-    if (updateHash) {
+    if (updateUrl) {
       isNavigatingProgrammatically.current = true;
-      window.location.hash = '/' + safePageId;
+      window.history.pushState(null, '', '/' + safePageId);
     }
 
     const overlay = transitionOverlayRef.current;
