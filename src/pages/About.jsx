@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Target, Eye, ShieldCheck, Compass, Ruler, Scale } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Target, Eye, ShieldCheck, Compass, Ruler, HelpCircle, ChevronDown, ChevronUp, UserCheck, Calendar } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -15,6 +15,10 @@ export default function About({ onNavigate }) {
     }
   };
 
+  // State for new features
+  const [activeFaq, setActiveFaq] = useState(null);
+  const [activeSpotlight, setActiveSpotlight] = useState(1);
+
   useEffect(() => {
     revealRefs.current.forEach((el) => {
       gsap.fromTo(
@@ -23,8 +27,8 @@ export default function About({ onNavigate }) {
         {
           opacity: 1,
           y: 0,
-          duration: 1,
-          ease: 'power4.out',
+          duration: 0.8,
+          ease: 'power3.out',
           scrollTrigger: {
             trigger: el,
             start: 'top 85%',
@@ -46,6 +50,17 @@ export default function About({ onNavigate }) {
     { year: '2016', title: 'Going Bespoke', desc: 'Transitioned exclusively to high-end architectural estates and custom developments.' },
     { year: '2020', title: 'Green Horizon', desc: 'Integrated proprietary carbon-neutral concrete mixes and off-grid solar frameworks.' },
     { year: '2024', title: 'Lumina Handoff', desc: 'Completed the flagship Lumina Atrium project, gaining international acclaim.' }
+  ];
+
+  const spotlights = [
+    { id: 1, name: 'Sora Tanaka', role: 'Concrete Chemist', focus: 'Nano-calcite crystal injection mixes', quote: 'Cement is a living chemical structure. By seeding it with carbon dioxide, we turn dynamic foundations into fossilized rock that blocks corrosion natively.' },
+    { id: 2, name: 'David Vance', role: 'Iron Architect', focus: 'Seismic frame layouts and joint physics', quote: 'We do not build simple steel boxes. We weld structural art that distributes horizontal shifting without buckling the exterior envelope.' }
+  ];
+
+  const faqs = [
+    { q: 'How does ZM guarantee structural lifecycles?', a: 'We construct deep rock concrete caissons and wrap load joins in carbon-fiber. Third-party testing chambers audit our material densities and wind load capacities before handoff.' },
+    { q: 'Are ZM materials verified carbon-neutral?', a: 'Yes, our concrete contains carbon-injected aggregates. We source marble exclusively from certified Italian quarries and fumed oak from monitored German ecological zones.' },
+    { q: 'What zoning and regulatory approvals do you handle?', a: 'We manage complete environmental clearances, seismic reviews, and civil zoning permits across California, Colorado, and New York.' }
   ];
 
   return (
@@ -111,8 +126,53 @@ export default function About({ onNavigate }) {
         </div>
       </section>
 
-      {/* Methodology */}
+      {/* NEW FEATURE: TEAM SPOTLIGHTS */}
       <section ref={addToRefs} className="section" style={{ background: 'rgba(255,255,255,0.01)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+          <div>
+            <span className="section-subtitle">Specialist Roster</span>
+            <h2 className="section-title">Team <span>Spotlights</span></h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.7', margin: '1.5rem 0' }}>
+              We hire world-class scientists and iron builders. Click a specialist profile to read their specific engineering focus.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {spotlights.map((spot) => (
+                <button
+                  key={spot.id}
+                  onClick={() => setActiveSpotlight(spot.id)}
+                  style={{
+                    padding: '1rem 1.5rem',
+                    borderRadius: '12px',
+                    border: '1px solid ' + (activeSpotlight === spot.id ? 'var(--accent-bronze)' : 'var(--border-color)'),
+                    background: activeSpotlight === spot.id ? 'rgba(197, 168, 128, 0.08)' : 'transparent',
+                    color: activeSpotlight === spot.id ? 'var(--accent-gold)' : 'var(--text-secondary)',
+                    textAlign: 'left',
+                    fontSize: '0.85rem',
+                    fontWeight: 600
+                  }}
+                >
+                  {spot.name} • {spot.role}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ padding: '3rem', background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '24px' }}>
+            <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.5rem' }}>
+              FOCUS: {spotlights.find(s => s.id === activeSpotlight).focus}
+            </span>
+            <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>
+              {spotlights.find(s => s.id === activeSpotlight).name}
+            </h4>
+            <p style={{ fontStyle: 'italic', color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6' }}>
+              "{spotlights.find(s => s.id === activeSpotlight).quote}"
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Methodology */}
+      <section ref={addToRefs} className="section">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '4rem', alignItems: 'center' }}>
           <div>
             <span className="section-subtitle">OUR METHODOLOGY</span>
@@ -138,7 +198,7 @@ export default function About({ onNavigate }) {
       </section>
 
       {/* Company Values */}
-      <section ref={addToRefs} className="section">
+      <section ref={addToRefs} className="section" style={{ background: 'rgba(255,255,255,0.01)' }}>
         <div className="section-header" style={{ textAlign: 'center', margin: '0 auto 4rem auto' }}>
           <span className="section-subtitle">HOW WE WORK</span>
           <h2 className="section-title">ZM Core <span>Principles</span></h2>
@@ -164,7 +224,7 @@ export default function About({ onNavigate }) {
       </section>
 
       {/* Historical Timeline */}
-      <section ref={addToRefs} className="section" style={{ background: 'rgba(255,255,255,0.01)', borderBottom: '1px solid var(--border-color)' }}>
+      <section ref={addToRefs} className="section">
         <div className="section-header" style={{ textAlign: 'center', margin: '0 auto 4rem auto' }}>
           <span className="section-subtitle">THE CHRONOLOGY</span>
           <h2 className="section-title">ZM <span>Timeline</span></h2>
@@ -204,6 +264,74 @@ export default function About({ onNavigate }) {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* NEW FEATURE: RECRUITMENT TIMELINE PIPELINE */}
+      <section ref={addToRefs} className="section" style={{ background: 'rgba(255,255,255,0.01)', borderBottom: '1px solid var(--border-color)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+          <div>
+            <span className="section-subtitle">Recruiting Coordinates</span>
+            <h2 className="section-title">ZM Interview <span>Pipeline</span></h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.7', margin: '1.5rem 0' }}>
+              We maintain a rigorous 4-phase recruiting pipeline for candidates applying to ZM coordinates.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {[
+                { phase: 'Phase 1: Portfolio Feasibility', desc: 'Evaluating credentials and architectural portfolios.' },
+                { phase: 'Phase 2: Technical Structural Assessment', desc: 'Live calculations testing loads and safety tolerances.' },
+                { phase: 'Phase 3: Craftsmanship Mockup', desc: 'On-site execution mockup reviewed by Marcus Vance.' },
+                { phase: 'Phase 4: Handoff Decision', desc: 'Final review by Principal Zakaria M.' }
+              ].map((step, idx) => (
+                <div key={idx} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(197,168,128,0.1)', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '0.75rem', fontWeight: 600 }}>
+                    {idx + 1}
+                  </div>
+                  <div>
+                    <h5 style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{step.phase}</h5>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{step.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* FAQ Accordion */}
+          <div>
+            <span className="section-subtitle">Audited Inquiry</span>
+            <h2 className="section-title">Bespoke <span>FAQ</span></h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.7', margin: '1.5rem 0' }}>
+              Review coordinates on our building methodologies, certifications, and structural regulations.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {faqs.map((faq, idx) => (
+                <div key={idx} className="faq-accordion-item">
+                  <button
+                    onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      textAlign: 'left',
+                      fontSize: '0.95rem',
+                      fontFamily: 'var(--font-serif)',
+                      color: activeFaq === idx ? 'var(--accent-gold)' : 'var(--text-primary)',
+                      padding: '0.5rem 0'
+                    }}
+                  >
+                    <span>{faq.q}</span>
+                    {activeFaq === idx ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
+                  {activeFaq === idx && (
+                    <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                      {faq.a}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

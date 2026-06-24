@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import CostCalculator from '../components/CostCalculator';
 import ROICalculator from '../components/ROICalculator';
-import { Shield, Hammer, Compass, Landmark, HardHat, Sparkles } from 'lucide-react';
+import { Shield, Hammer, Compass, Landmark, HardHat, Sparkles, MapPin, DollarSign, Activity } from 'lucide-react';
+import { safeMerge } from '../utils/security';
 
 export default function Services({ onNavigate }) {
   const [activeTab, setActiveTab] = useState('residential');
+
+  // Customizer state
+  const [customizer, setCustomizer] = useState({ marbleRatio: 40, woodRatio: 30, steelRatio: 30 });
+  const [amortization, setAmortization] = useState(false);
 
   const servicesData = {
     residential: {
@@ -53,6 +58,31 @@ export default function Services({ onNavigate }) {
 
   const currentService = servicesData[activeTab];
   const IconC = currentService.icon;
+
+  // Materials Map coordinates
+  const sourcingCoordinates = [
+    { name: 'Carrara Marble', location: 'Carrara, Italy', type: 'Stone quarry', coords: '44.0792° N, 10.0984° E' },
+    { name: 'Weathering Alloy', location: 'Luleå, Sweden', type: 'Smelting works', coords: '65.5848° N, 22.1567° E' },
+    { name: 'German Oak', location: 'Schwarzwald, Germany', type: 'Timber reserves', coords: '48.0645° N, 8.2198° E' }
+  ];
+
+  // Customizer calculations - secure merging demonstration
+  const handleRatioChange = (key, value) => {
+    // Prevent Prototype Pollution by merging config cleanly
+    const updatedRatio = safeMerge({}, customizer);
+    updatedRatio[key] = Math.max(0, Math.min(100, Number(value)));
+    setCustomizer(updatedRatio);
+  };
+
+  const calculatedPremium = (customizer.marbleRatio * 150) + (customizer.woodRatio * 90) + (customizer.steelRatio * 120);
+
+  const formatCurrency = (val) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0
+    }).format(val);
+  };
 
   return (
     <div style={{ paddingTop: '100px' }}>
@@ -131,6 +161,88 @@ export default function Services({ onNavigate }) {
         </div>
       </section>
 
+      {/* NEW FEATURE: MATERIAL CUSTOMIZER & SOURCING COORDINATES MAP */}
+      <section ref={addToRefs} className="section" style={{ background: 'rgba(255,255,255,0.01)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+          {/* Customizer */}
+          <div className="client-portal-card glowing-card" style={{ padding: '2.5rem' }}>
+            <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--accent-gold)' }}>Configurator Widget</span>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', margin: '0.5rem 0 1.5rem 0' }}>Bespoke Material Mix</h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                  <span>Stone / Marble Ratio</span>
+                  <span>{customizer.marbleRatio}%</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" max="100" 
+                  value={customizer.marbleRatio}
+                  onChange={(e) => handleRatioChange('marbleRatio', e.target.value)}
+                  style={{ width: '100%', accentColor: 'var(--accent-bronze)', height: '4px', background: 'var(--border-color)', borderRadius: '2px', outline: 'none' }}
+                />
+              </div>
+              
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                  <span>Oak Wood Ratio</span>
+                  <span>{customizer.woodRatio}%</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" max="100" 
+                  value={customizer.woodRatio}
+                  onChange={(e) => handleRatioChange('woodRatio', e.target.value)}
+                  style={{ width: '100%', accentColor: 'var(--accent-bronze)', height: '4px', background: 'var(--border-color)', borderRadius: '2px', outline: 'none' }}
+                />
+              </div>
+
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                  <span>Alloy Steel Ratio</span>
+                  <span>{customizer.steelRatio}%</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" max="100" 
+                  value={customizer.steelRatio}
+                  onChange={(e) => handleRatioChange('steelRatio', e.target.value)}
+                  style={{ width: '100%', accentColor: 'var(--accent-bronze)', height: '4px', background: 'var(--border-color)', borderRadius: '2px', outline: 'none' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Calculated Material Premium</span>
+              <span style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: 600 }}>
+                {formatCurrency(calculatedPremium)}
+              </span>
+            </div>
+          </div>
+
+          {/* Sourcing Map Coordinates */}
+          <div>
+            <span className="section-subtitle">GLOBAL AUDITING</span>
+            <h2 className="section-title">Quarry-to-Site <span>Tracing</span></h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.75', margin: '1.5rem 0' }}>
+              We track the origin coordinates of all primary structural elements. Our logistical pipeline guarantees authentic material handoffs.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {sourcingCoordinates.map((coord, idx) => (
+                <div key={idx} style={{ display: 'flex', gap: '1rem', alignItems: 'center', padding: '1rem', background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
+                  <MapPin size={18} style={{ color: 'var(--accent-bronze)' }} />
+                  <div>
+                    <h5 style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{coord.name}</h5>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{coord.location} ({coord.coords})</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Advanced Calculators Section */}
       <section className="section">
         <div className="section-header" style={{ textAlign: 'center', margin: '0 auto 4rem auto' }}>
@@ -141,9 +253,68 @@ export default function Services({ onNavigate }) {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '3rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '3rem', marginBottom: '4rem' }}>
           <CostCalculator onNavigate={onNavigate} />
-          <ROICalculator />
+          <div>
+            <ROICalculator />
+            
+            {/* NEW FEATURE: AMORTIZATION RETURNS SCHEDULE */}
+            <div style={{ marginTop: '2rem' }}>
+              <button
+                onClick={() => setAmortization(!amortization)}
+                style={{
+                  width: '100%',
+                  padding: '1rem',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border-color)',
+                  background: 'var(--bg-surface)',
+                  color: 'var(--accent-gold)',
+                  fontSize: '0.8rem',
+                  textTransform: 'uppercase',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <Activity size={16} /> {amortization ? 'Hide Amortization Table' : 'Inspect Amortization returns schedule'}
+              </button>
+              
+              {amortization && (
+                <div style={{
+                  marginTop: '1rem',
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '12px',
+                  padding: '1.25rem',
+                  overflowX: 'auto'
+                }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
+                        <th style={{ padding: '8px' }}>Year</th>
+                        <th style={{ padding: '8px' }}>Appreciation Value</th>
+                        <th style={{ padding: '8px' }}>Rental Yield</th>
+                        <th style={{ padding: '8px' }}>Cumulative Return</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[1, 2, 3, 4, 5].map((year) => (
+                        <tr key={year} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+                          <td style={{ padding: '8px', color: 'var(--text-primary)', fontWeight: 600 }}>Year {year}</td>
+                          <td style={{ padding: '8px' }}>+{formatCurrency(1500000 * 0.085 * year)}</td>
+                          <td style={{ padding: '8px' }}>{formatCurrency(1500000 * 0.045 * year)}</td>
+                          <td style={{ padding: '8px', color: '#10B981' }}>{formatCurrency(1500000 * 0.13 * year)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+          </div>
         </div>
 
         <style>{`

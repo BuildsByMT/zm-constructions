@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Clock, Calendar, User, Share2 } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, User, Share2, Play, Pause, FileText, CheckCircle } from 'lucide-react';
+import { sanitizeString } from '../utils/security';
 
 export default function BlogDetails({ onNavigate }) {
   const [scrollProgress, setScrollProgress] = useState(0);
+  
+  // State for new features
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [downloadMsg, setDownloadMsg] = useState('');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -18,6 +23,15 @@ export default function BlogDetails({ onNavigate }) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const triggerDownload = (title) => {
+    const cleanTitle = sanitizeString(title);
+    setDownloadMsg(`Initializing secure download for "${cleanTitle}.pdf"...`);
+    setTimeout(() => {
+      setDownloadMsg(`Document "${cleanTitle}.pdf" successfully compiled and exported.`);
+      setTimeout(() => setDownloadMsg(''), 3000);
+    }, 1500);
+  };
 
   return (
     <div style={{ paddingTop: '80px' }}>
@@ -66,12 +80,53 @@ export default function BlogDetails({ onNavigate }) {
             The Evolution of <span className="shiny-text">Ultra-Luxury</span> Structural Concrete
           </h1>
 
+          {/* NEW FEATURE: AUDIO NARRATION PLAYER & PDF DOWNLOAD */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', marginBottom: '2rem', padding: '1rem', background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+            {/* Audio player */}
+            <div className="audio-player-container">
+              <button 
+                onClick={() => setIsPlaying(!isPlaying)}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '50%', background: 'var(--accent-bronze)', color: '#fff' }}
+              >
+                {isPlaying ? <Pause size={12} /> : <Play size={12} style={{ marginLeft: '2px' }} />}
+              </button>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                {isPlaying ? 'Playing Audio Narration (6:24)...' : 'Listen to Article Narration'}
+              </span>
+            </div>
+
+            {/* PDF Downloader */}
+            <button 
+              onClick={() => triggerDownload('The Evolution of Ultra-Luxury Structural Concrete')}
+              style={{
+                padding: '0.75rem 1.25rem',
+                border: '1px solid var(--border-color)',
+                borderRadius: '30px',
+                fontSize: '0.7rem',
+                textTransform: 'uppercase',
+                fontWeight: 600,
+                color: 'var(--accent-gold)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem'
+              }}
+            >
+              <FileText size={14} /> Download PDF spec sheet
+            </button>
+          </div>
+
+          {downloadMsg && (
+            <div style={{ marginBottom: '2rem', padding: '0.5rem 1rem', background: 'rgba(16,185,129,0.1)', color: '#10B981', fontSize: '0.75rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <CheckCircle size={14} /> {downloadMsg}
+            </div>
+          )}
+
           {/* Author/Meta */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', padding: '1.5rem 0', gap: '1.5rem', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
             <div style={{ display: 'flex', gap: '2rem' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><User size={14} /> Zakaria M. Al-Husseini</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Calendar size={14} /> June 01, 2026</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Clock size={14} /> 6 Min Read</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Clock size={14} /> {isPlaying ? 'Streaming Audio' : '6 Min Read'}</span>
             </div>
             <button style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }} className="share-btn">
               <Share2 size={14} /> Share coordinates

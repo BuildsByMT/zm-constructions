@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import CustomCursor from './components/CustomCursor';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
+import SmartChatbot from './components/SmartChatbot';
+import { verifyRedirectPage } from './utils/security';
 
 // Pages
 import Home from './pages/Home';
@@ -26,10 +28,13 @@ export default function App() {
 
   // Smooth cinematic page transition wipes
   const navigateToPage = (pageId, params = null) => {
+    // Open Redirect validation & sanitization
+    const safePageId = verifyRedirectPage(pageId);
+
     const overlay = transitionOverlayRef.current;
     const logo = transitionLogoRef.current;
     if (!overlay) {
-      setCurrentPage(pageId);
+      setCurrentPage(safePageId);
       setActiveParams(params);
       window.scrollTo(0, 0);
       return;
@@ -54,7 +59,7 @@ export default function App() {
 
     // 3. Switch page state & scroll to top mid-transition
     tl.add(() => {
-      setCurrentPage(pageId);
+      setCurrentPage(safePageId);
       setActiveParams(params);
       window.scrollTo(0, 0);
     });
@@ -155,6 +160,8 @@ export default function App() {
           ZM CONSTRUCTIONS
         </div>
       </div>
+      {/* Global Concierge Chatbot Widget */}
+      <SmartChatbot onNavigate={navigateToPage} />
     </>
   );
 }

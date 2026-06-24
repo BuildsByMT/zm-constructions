@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+/* Fonts loaded via HTML link tags for LCP optimization */
 
 :root {
   /* Dark Mode (Default) Variables */
@@ -581,3 +581,239 @@ button, input, select, textarea {
   left: 0;
   will-change: transform;
 }
+
+/* ====================================================
+   NEW LUXURY MODULES & WIDGETS
+   ==================================================== */
+
+/* Client Portal */
+.client-portal-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 2.5rem;
+  transition: var(--transition-smooth);
+}
+.portal-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  display: inline-block;
+  box-shadow: 0 0 8px #10B981;
+}
+
+/* Material Showcase */
+.material-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+.material-texture-box {
+  height: 120px;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+.material-texture-box:hover {
+  transform: scale(1.03);
+  border-color: var(--accent-bronze);
+}
+.material-hover-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px;
+  background: rgba(0,0,0,0.7);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #fff;
+  text-align: center;
+}
+
+/* Live feeds & viewports */
+.webcam-container {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  aspect-ratio: 16/9;
+}
+.webcam-status-pulsate {
+  width: 6px;
+  height: 6px;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: mapPulse 1.5s infinite;
+}
+.tour-viewport {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  height: 350px;
+  border: 1px solid var(--border-color);
+}
+
+/* Audio Player */
+.audio-player-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 30px;
+  width: fit-content;
+}
+
+/* Chatbot */
+.chatbot-wrapper {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+}
+.chatbot-toggle-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent-bronze);
+  color: #ffffff;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.chatbot-toggle-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 35px var(--glow-bright);
+}
+.chatbot-window {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  width: 320px;
+  height: 400px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+}
+.chat-message-bubble {
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  max-width: 80%;
+  line-height: 1.4;
+}
+
+/* Calendars & upload zones */
+.audit-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  text-align: center;
+}
+.file-drag-zone {
+  border: 2px dashed var(--border-color);
+  border-radius: 16px;
+  padding: 2.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.file-drag-zone:hover {
+  border-color: var(--accent-bronze);
+  background: rgba(255,255,255,0.01);
+}
+
+/* FAQ Accordion */
+.faq-accordion-item {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1.25rem 0;
+}
+
+/* ====================================================
+   40+ SCREEN VIEWPORTS RESPONSIVENESS
+   ==================================================== */
+
+/* 1. Watch & Ultra-compact Mobiles (280px - 320px: Galaxy Fold folded) */
+@media (max-width: 320px) {
+  :root { --header-height: 60px; }
+  .hero-title { font-size: 2rem !important; line-height: 1.2; }
+  .hero-desc { font-size: 0.85rem !important; }
+  .section { padding: 4rem 0 !important; }
+  .section-title { font-size: 1.75rem !important; }
+  .border-beam-btn { padding: 0.75rem 1.5rem !important; font-size: 0.65rem !important; }
+  .nav-floating { width: 95% !important; padding: 0 0.75rem !important; }
+  .nav-logo span { display: none !important; }
+  .bento-card { padding: 1rem !important; }
+}
+
+/* 2. Small Mobiles (321px - 375px: iPhone SE, Pixel 5) */
+@media (min-width: 321px) and (max-width: 375px) {
+  .hero-title { font-size: 2.35rem !important; }
+  .section-title { font-size: 2rem !important; }
+  .section { padding: 5rem 0 !important; }
+}
+
+/* 3. Medium Mobiles (376px - 414px: iPhone 12/13/14, Galaxy S21) */
+@media (min-width: 376px) and (max-width: 414px) {
+  .hero-title { font-size: 2.65rem !important; }
+  .section-title { font-size: 2.25rem !important; }
+}
+
+/* 4. Large Mobiles (415px - 480px: iPhone 14 Pro Max, Pixel Pro) */
+@media (min-width: 415px) and (max-width: 480px) {
+  .hero-title { font-size: 2.85rem !important; }
+}
+
+/* 5. Foldables Unfolded & Small Tablets (481px - 768px: Galaxy Fold open, iPad Mini) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .hero-title { font-size: 3.25rem !important; }
+  .section-title { font-size: 2.5rem !important; }
+  .section { padding: 6rem 0 !important; }
+}
+
+/* 6. Standard Tablets (769px - 1024px: iPad Pro 11, Surface Pro) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hero-title { font-size: 4rem !important; }
+  .section-title { font-size: 2.75rem !important; }
+  .nav-floating { width: 85% !important; }
+}
+
+/* 7. Small Laptops (1025px - 1280px: MacBook Air 13) */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .hero-title { font-size: 4.5rem !important; }
+  .nav-floating { width: 90% !important; }
+}
+
+/* 8. Medium Laptops & Desktops (1281px - 1440px: MacBook Pro 14/16) */
+@media (min-width: 1281px) and (max-width: 1440px) {
+  .hero-title { font-size: 5rem !important; }
+}
+
+/* 9. Large Desktops (1441px - 1920px: Standard 1080p monitors) */
+@media (min-width: 1441px) and (max-width: 1920px) {
+  .hero-content { max-width: 1200px !important; }
+}
+
+/* 10. Ultra-wide monitors (1921px+: 4K displays, wide gaming screens) */
+@media (min-width: 1921px) {
+  .hero-content { max-width: 1400px !important; }
+  .hero-title { font-size: 6rem !important; }
+  .section { max-width: 1400px !important; }
+}
+

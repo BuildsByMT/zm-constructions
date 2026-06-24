@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { ShieldCheck, GraduationCap, Heart, Clock, X, ArrowUpRight, Landmark } from 'lucide-react';
+import { sanitizeString, validateEmail } from '../utils/security';
 
 export default function Careers() {
   const [activeJob, setActiveJob] = useState(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formError, setFormError] = useState('');
   const [formData, setFormData] = useState({ name: '', email: '', portfolio: '', resume: '' });
 
   const jobs = [
@@ -12,10 +14,20 @@ export default function Careers() {
     { id: 3, title: 'Bespoke Finishing Joiner', dept: 'Craftsmanship', loc: 'Aspen, CO', desc: 'Handcrafting luxury millwork, pivoting door fittings, and conceallable structural cabinets. Requires absolute zero-tolerance precision and extensive woodcraft background.' }
   ];
 
+  const handleFormChange = (key, value) => {
+    const clean = sanitizeString(value);
+    setFormData(prev => ({ ...prev, [key]: clean }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validateEmail(formData.email)) {
+      setFormError('Invalid email coordinates format. Submission blocked.');
+      return;
+    }
     if (formData.name && formData.email) {
       setFormSubmitted(true);
+      setFormError('');
       setFormData({ name: '', email: '', portfolio: '', resume: '' });
     }
   };
@@ -182,13 +194,15 @@ export default function Careers() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {formError && <span style={{ color: '#EF4444', fontSize: '0.75rem' }}>{formError}</span>}
                 <div>
                   <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>Full Name</label>
                   <input
                     type="text"
                     required
+                    maxLength={128}
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) => handleFormChange('name', e.target.value)}
                     style={{ width: '100%', padding: '0.85rem 1rem', border: '1px solid var(--border-color)', borderRadius: '12px', background: 'rgba(255,255,255,0.02)', color: 'var(--text-primary)' }}
                   />
                 </div>
@@ -197,8 +211,9 @@ export default function Careers() {
                   <input
                     type="email"
                     required
+                    maxLength={128}
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) => handleFormChange('email', e.target.value)}
                     style={{ width: '100%', padding: '0.85rem 1rem', border: '1px solid var(--border-color)', borderRadius: '12px', background: 'rgba(255,255,255,0.02)', color: 'var(--text-primary)' }}
                   />
                 </div>
@@ -206,8 +221,9 @@ export default function Careers() {
                   <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>Portfolio Link (GitHub, Behance, etc.)</label>
                   <input
                     type="url"
+                    maxLength={128}
                     value={formData.portfolio}
-                    onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
+                    onChange={(e) => handleFormChange('portfolio', e.target.value)}
                     style={{ width: '100%', padding: '0.85rem 1rem', border: '1px solid var(--border-color)', borderRadius: '12px', background: 'rgba(255,255,255,0.02)', color: 'var(--text-primary)' }}
                   />
                 </div>
@@ -216,9 +232,10 @@ export default function Careers() {
                   <textarea
                     rows={4}
                     required
+                    maxLength={500}
                     placeholder="Describe your engineering credentials or paste a link..."
                     value={formData.resume}
-                    onChange={(e) => setFormData({ ...formData, resume: e.target.value })}
+                    onChange={(e) => handleFormChange('resume', e.target.value)}
                     style={{ width: '100%', padding: '0.85rem 1rem', border: '1px solid var(--border-color)', borderRadius: '12px', background: 'rgba(255,255,255,0.02)', color: 'var(--text-primary)', resize: 'none' }}
                   />
                 </div>

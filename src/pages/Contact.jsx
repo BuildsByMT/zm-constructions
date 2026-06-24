@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle2, Landmark } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle2, Landmark, Calendar, Upload, FileText } from 'lucide-react';
+import { sanitizeString, validateEmail } from '../utils/security';
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formError, setFormError] = useState('');
   const [activeOffice, setActiveOffice] = useState('bh');
+
+  // Scheduler state
+  const [scheduleDay, setScheduleDay] = useState(null);
+  const [scheduleStatus, setScheduleStatus] = useState('');
+
+  // File Upload state
+  const [dragActive, setDragActive] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState(null);
 
   const offices = {
     bh: { city: 'Beverly Hills', coords: '34.0736° N, 118.4004° W', addr: '9440 Santa Monica Blvd, Beverly Hills, CA 90210', phone: '+1 (800) 962-7782', img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600' },
@@ -12,12 +22,64 @@ export default function Contact() {
     ny: { city: 'New York City', coords: '40.7128° N, 74.0060° W', addr: '55 Hudson Yards, New York, NY 10001', phone: '+1 (800) 962-7784', img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=600' }
   };
 
+  const handleFormChange = (key, value) => {
+    // Escape XSS payloads instantly during state update
+    const sanitizedVal = sanitizeString(value);
+    setFormData(prev => ({ ...prev, [key]: sanitizedVal }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Mitigate ReDoS by validating email securely
+    if (!validateEmail(formData.email)) {
+      setFormError('Invalid email format detected. Security shield blocked submission.');
+      return;
+    }
+
     if (formData.name && formData.email && formData.message) {
       setFormSubmitted(true);
+      setFormError('');
       setFormData({ name: '', email: '', subject: '', message: '' });
+      setUploadedFile(null);
     }
+  };
+
+  // Drag and Drop handlers
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      // File type/size validation mockup
+      if (file.size > 10 * 1024 * 1024) {
+        setFormError('Security threshold: Blueprint upload exceeds 10MB limit.');
+      } else {
+        setUploadedFile({ name: file.name, size: (file.size / 1024 / 1024).toFixed(2) });
+        setFormError('');
+      }
+    }
+  };
+
+  // Schedule site audit
+  const selectDay = (day) => {
+    setScheduleDay(day);
+    setScheduleStatus(`Scheduling feasibility audit for June ${day}, 2026. Coordinates locked.`);
+    setTimeout(() => {
+      setScheduleStatus(`Feasibility audit scheduled successfully for June ${day}, 2026. Check your portal.`);
+      setTimeout(() => setScheduleStatus(''), 3000);
+    }, 1200);
   };
 
   return (
@@ -32,6 +94,88 @@ export default function Contact() {
         <p className="hero-desc" style={{ maxWidth: '650px' }}>
           Consult with our general contracting coordinators or arrange a private conference at one of our office locations.
         </p>
+      </section>
+
+      {/* NEW FEATURE: SITE AUDIT SCHEDULER & SECURE UPLOAD */}
+      <section ref={e => e && e.classList.add('section')} className="section" style={{ background: 'rgba(255,255,255,0.01)', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+          
+          {/* Site Audit Scheduler */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+              <Calendar size={18} style={{ color: 'var(--accent-bronze)' }} />
+              <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Logistics Coordinator</span>
+            </div>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', marginBottom: '1.5rem', fontWeight: 500 }}>
+              Feasibility <span style={{ color: 'var(--accent-bronze)' }}>Audit Scheduler</span>
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '2rem' }}>
+              Schedule an on-site structural audit. Select available days in June 2026 below.
+            </p>
+            
+            <div className="audit-calendar-grid" style={{ marginBottom: '1.5rem', padding: '1rem', background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+              {/* Calendar weekdays header */}
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                <span key={i} style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{d}</span>
+              ))}
+              {/* Padding for empty calendar slots */}
+              {Array.from({ length: 1 }).map((_, i) => <span key={i} />)}
+              {/* June days */}
+              {[15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].map((day) => (
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() => selectDay(day)}
+                  style={{
+                    padding: '8px 0',
+                    borderRadius: '8px',
+                    fontSize: '0.75rem',
+                    border: '1px solid ' + (scheduleDay === day ? 'var(--accent-bronze)' : 'transparent'),
+                    background: scheduleDay === day ? 'rgba(197, 168, 128, 0.08)' : 'transparent',
+                    color: scheduleDay === day ? 'var(--accent-gold)' : 'var(--text-primary)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {day}
+                </button>
+              ))}
+            </div>
+
+            {scheduleStatus && (
+              <div style={{ padding: '0.75rem', background: 'rgba(197,168,128,0.1)', color: 'var(--accent-gold)', fontSize: '0.75rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <CheckCircle2 size={14} /> {scheduleStatus}
+              </div>
+            )}
+          </div>
+
+          {/* Secure File Upload console */}
+          <div 
+            className="file-drag-zone"
+            onDragEnter={handleDrag}
+            onDragOver={handleDrag}
+            onDragLeave={handleDrag}
+            onDrop={handleDrop}
+            style={{
+              borderColor: dragActive ? 'var(--accent-bronze)' : 'var(--border-color)',
+              background: dragActive ? 'rgba(255,255,255,0.02)' : 'transparent'
+            }}
+          >
+            <Upload size={32} style={{ color: 'var(--accent-bronze)', marginBottom: '1rem' }} />
+            <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', marginBottom: '0.5rem' }}>Upload Blueprints</h4>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.4 }}>
+              Drag and drop your engineering blueprints or architectural models here (MAX 10MB).
+            </p>
+            {uploadedFile ? (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '0.75rem' }}>
+                <FileText size={14} style={{ color: 'var(--accent-gold)' }} />
+                <span>{uploadedFile.name} ({uploadedFile.size}MB)</span>
+              </div>
+            ) : (
+              <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--accent-gold)' }}>Secure Transport Active</span>
+            )}
+          </div>
+
+        </div>
       </section>
 
       {/* Main Layout */}
@@ -62,13 +206,15 @@ export default function Contact() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {formError && <span style={{ color: '#EF4444', fontSize: '0.75rem' }}>{formError}</span>}
               <div>
                 <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>Your Name</label>
                 <input
                   type="text"
                   required
+                  maxLength={128} // Long Password / string DoS protection
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => handleFormChange('name', e.target.value)}
                   style={{
                     width: '100%',
                     padding: '0.85rem 1rem',
@@ -84,8 +230,9 @@ export default function Contact() {
                 <input
                   type="email"
                   required
+                  maxLength={128} // ReDoS limit
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => handleFormChange('email', e.target.value)}
                   style={{
                     width: '100%',
                     padding: '0.85rem 1rem',
@@ -101,8 +248,9 @@ export default function Contact() {
                 <input
                   type="text"
                   required
+                  maxLength={128}
                   value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                  onChange={(e) => handleFormChange('subject', e.target.value)}
                   style={{
                     width: '100%',
                     padding: '0.85rem 1rem',
@@ -118,8 +266,9 @@ export default function Contact() {
                 <textarea
                   rows={4}
                   required
+                  maxLength={500}
                   value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  onChange={(e) => handleFormChange('message', e.target.value)}
                   style={{
                     width: '100%',
                     padding: '0.85rem 1rem',
