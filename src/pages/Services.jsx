@@ -162,7 +162,7 @@ export default function Services({ onNavigate }) {
       </section>
 
       {/* NEW FEATURE: MATERIAL CUSTOMIZER & SOURCING COORDINATES MAP */}
-      <section ref={addToRefs} className="section" style={{ background: 'rgba(255,255,255,0.01)' }}>
+      <section className="section" style={{ background: 'rgba(255,255,255,0.01)' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '4rem', alignItems: 'center' }}>
           {/* Customizer */}
           <div className="client-portal-card glowing-card" style={{ padding: '2.5rem' }}>

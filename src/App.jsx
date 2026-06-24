@@ -21,15 +21,49 @@ import QuoteRequest from './pages/QuoteRequest';
 import gsap from 'gsap';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+  const getPageFromHash = () => {
+    const hash = window.location.hash.replace('#/', '');
+    return verifyRedirectPage(hash) || 'home';
+  };
+
+  const [currentPage, setCurrentPage] = useState(getPageFromHash());
   const [activeParams, setActiveParams] = useState(null);
   const transitionOverlayRef = useRef(null);
   const transitionLogoRef = useRef(null);
+  const isNavigatingProgrammatically = useRef(false);
+
+  // Sync state on hashchange (e.g. browser back/forward buttons)
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (isNavigatingProgrammatically.current) {
+        isNavigatingProgrammatically.current = false;
+        return;
+      }
+      const pageId = getPageFromHash();
+      if (pageId !== currentPage) {
+        navigateToPage(pageId, null, false);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    
+    // Set initial hash if empty
+    if (!window.location.hash) {
+      window.location.hash = '/' + currentPage;
+    }
+    
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [currentPage]);
 
   // Smooth cinematic page transition wipes
-  const navigateToPage = (pageId, params = null) => {
+  const navigateToPage = (pageId, params = null, updateHash = true) => {
     // Open Redirect validation & sanitization
     const safePageId = verifyRedirectPage(pageId);
+
+    if (updateHash) {
+      isNavigatingProgrammatically.current = true;
+      window.location.hash = '/' + safePageId;
+    }
 
     const overlay = transitionOverlayRef.current;
     const logo = transitionLogoRef.current;
